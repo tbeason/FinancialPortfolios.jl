@@ -22,7 +22,7 @@ export weights
 `FinancialPortfolio`
 
 A (possibly named) collection of portfolio weights.
-Weights can be an dictionary-like object matching asset identifiers with weights or just a vector of weights.
+Weights can be a dictionary-like object matching asset identifiers with weights or just a vector of weights.
 
 _**Example**_
 ```
