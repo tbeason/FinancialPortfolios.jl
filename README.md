@@ -51,23 +51,21 @@ stockB = 0.01/12 .+ 0.02/sqrt(12) .* randn(120)
 df = DataFrame(month=months,stockA=stockA,stockB=stockB)
 FP = FinancialPortfolio(dictionary(["stockA"=>0.8,"stockB"=>0.2]))  # initial portfolio weights
 
-function runportfolio(FP0,df0)
+function runportfolio!(FP0,df0)
     T = nrow(df0)
-    outdf = copy(df0)
-    outdf[!,:portfolioreturns] = missings(Float64,T)
+    df0[!,:portfolioreturns] = missings(Float64,T)
     FPreb = copy(FP0)
     
-    for i in 1:T
-        row = outdf[i,:]
+    for row in eachrow(df0)
         if row.month == 1   # rebalances each January
             FP0 = copy(FPreb)
         end
         row.portfolioreturns = update!(FP0,row)
     end
-    return outdf
+    return FP0
 end
 
-runportfolio(FP,df)
+runportfolio!(FP,df)
 ```
 
 
