@@ -8,7 +8,7 @@ module FinancialPortfolios
 
 export FinancialPortfolio
 export portfolioreturn, update!
-export weights
+export positions
 
 
 
@@ -55,7 +55,7 @@ FinancialPortfolio(x::T) where {T} = FinancialPortfolio{T}(copyandnormalize(x))
 
 Recover the weights of the assets in the portfolio (as a fraction of total value).
 """
-weights(fp::FinancialPortfolio) = fp.positions
+positions(fp::FinancialPortfolio) = fp.positions
 
 
 
