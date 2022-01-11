@@ -110,6 +110,73 @@ function update!(fp::FinancialPortfolio,ret)
 end
 
 
+
+
+
+
+
+
+"""
+    safeportfolioreturn(fp::FinancialPortfolio,ret)
+
+Compute the weighted portfolio return. If the portfolio weights have names or identifiers, the returns should as well.
+If `ret` does not contain an entry for one of the existing portfolio positions, this function assumes the position was closed.
+
+
+_**Example**_
+```
+w = [0.5, 0.25, 0.25]
+r = [0.1, 0.1, -0.1]
+FP = FinancialPortfolio(w)
+safeportfolioreturn(FP,r)
+```
+"""
+function safeportfolioreturn(fp::FinancialPortfolio,ret)
+    portreturn = 0.0
+    for k in eachindex(fp.positions)
+        if haskey(keys(ret),k)
+            portreturn += fp.positions[k] * ret[k]
+        end
+    end
+    return portreturn
+end
+
+
+
+
+
+
+
+"""
+    safeupdate!(fp::FinancialPortfolio,ret)
+
+Updates the weights of the portfolio in place. Returns the period portfolio return.
+
+If `ret` does not contain an entry for one of the existing portfolio positions, this function assumes the position was closed.
+
+_**Example**_
+```
+w = [0.5, 0.25, 0.25]
+r = [0.1, 0.1, -0.1]
+FP = FinancialPortfolio(w)
+update!(FP,r)
+FP
+```
+"""
+function safeupdate!(fp::FinancialPortfolio,ret)
+    portreturn = safeportfolioreturn(fp,ret)
+    
+    for k in eachindex(fp.positions)
+        if haskey(keys(ret),k)
+            fp.positions[k] = fp.positions[k] * (1+ret[k])
+        else
+            fp.positions[k] = 0.0
+        end
+    end
+    normalize!(fp)
+    return portreturn
+end
+
 ##################### UNEXPORTED AND/OR EXTENDED BASE METHODS
 """
     FinancialPortfolios.normalize!(fp::FinancialPortfolio)
