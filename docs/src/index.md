@@ -1,3 +1,0 @@
-# FinancialPortfolios
-
-*Documentation goes here.*
