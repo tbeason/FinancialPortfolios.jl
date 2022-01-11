@@ -1,10 +1,9 @@
 """
-`FinancialPortfolios`
+    FinancialPortfolios
 
 A minimalist Julia package for working with simple portfolios of financial assets.
 """
 module FinancialPortfolios
-
 
 export FinancialPortfolio
 export portfolioreturn, update!
@@ -19,7 +18,7 @@ export positions
 
 
 """
-`FinancialPortfolio`
+    FinancialPortfolio
 
 A (possibly named) collection of portfolio weights.
 Weights can be a dictionary-like object matching asset identifiers with weights or just a vector of weights.
@@ -51,7 +50,7 @@ FinancialPortfolio(x::T) where {T} = FinancialPortfolio{T}(copyandnormalize(x))
 
 
 """
-`weights(fp::FinancialPortfolio)`
+    positions(fp::FinancialPortfolio)
 
 Recover the weights of the assets in the portfolio (as a fraction of total value).
 """
@@ -61,7 +60,7 @@ positions(fp::FinancialPortfolio) = fp.positions
 
 
 """
-`portfolioreturn(fp::FinancialPortfolio,ret)`
+    portfolioreturn(fp::FinancialPortfolio,ret)
 
 Compute the weighted portfolio return. If the portfolio weights have names or identifiers, the returns should as well.
 The portfolio is allowed to contain only a subset of the supplied asset returns, but not the other way around.
@@ -85,7 +84,7 @@ end
 
 
 """
-`update!(fp::FinancialPortfolio,ret)`
+    update!(fp::FinancialPortfolio,ret)
 
 Updates the weights of the portfolio in place. Returns the period portfolio return.
 
@@ -113,7 +112,7 @@ end
 
 ##################### UNEXPORTED AND/OR EXTENDED BASE METHODS
 """
-`FinancialPortfolios.normalize!(fp::FinancialPortfolio)`
+    FinancialPortfolios.normalize!(fp::FinancialPortfolio)
 
 Normalize portfolio weights to sum to 1. Used during [`update!`](@ref).
 """
@@ -126,7 +125,7 @@ function normalize!(fp::FinancialPortfolio)
 end
 
 """
-`FinancialPortfolios.copyandnormalize(x)`
+    FinancialPortfolios.copyandnormalize(x)
 
 Normalize portfolio weights to sum to 1. Used during construction.
 """
@@ -141,13 +140,13 @@ end
 
 
 """
-`keys(fp::FinancialPortfolio)`
+    keys(fp::FinancialPortfolio)
 
 Recover the names or identifiers of the assets in the portfolio.
 """
 Base.keys(fp::FinancialPortfolio) = collect(keys(fp.positions))
 
-
+Base.iterate(fp::FinancialPortfolio) = iterate(fp.positions)
 
 Base.length(fp::FinancialPortfolio) = length(fp.positions)
 

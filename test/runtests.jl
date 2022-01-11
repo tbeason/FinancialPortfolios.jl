@@ -36,6 +36,7 @@ ret_dict_int = Dict(Iterators.zip(1:3,r))
     FP2 = similar(FP)
     @test portfolioreturn(FP2,r) ≈ ewret
     @test sort(keys(FP)) == [1,2,3]
+    @test isempty(FP) == false
 end
 
 @testset "Dict-String" begin
