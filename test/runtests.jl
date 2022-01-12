@@ -37,6 +37,7 @@ ret_dict_int = Dict(Iterators.zip(1:3,r))
     @test portfolioreturn(FP2,r) ≈ ewret
     @test sort(keys(FP)) == [1,2,3]
     @test isempty(FP) == false
+    @test_throws AssertionError checkupdate!(FP,r)
 end
 
 @testset "Dict-String" begin
@@ -51,6 +52,12 @@ end
     FP2 = similar(FP)
     @test portfolioreturn(FP2,ret) ≈ ewret
     @test sort(keys(FP)) == nm
+    ret_dict_minus = copy(ret_dict)
+    delete!(ret_dict_minus,"a")
+    @test checkupdate!(FinancialPortfolio(plain_dict),ret_dict_minus) ≈ 0
+    checkupdate!(FP,ret_dict_minus)
+    @test length(FP) == length(w)-1
+    @test keys(FP.positions) == keys(ret_dict_minus)
 end
 
 @testset "Dict-Symbol" begin
