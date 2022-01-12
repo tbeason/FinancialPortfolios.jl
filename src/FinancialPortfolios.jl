@@ -8,7 +8,7 @@ module FinancialPortfolios
 export FinancialPortfolio
 export portfolioreturn, update!
 export positions
-
+export checkupdate!
 
 
 
@@ -100,15 +100,52 @@ FP
 ```
 """
 function update!(fp::FinancialPortfolio,ret)
-    portreturn = portfolioreturn(fp,ret)
-    
+    portreturn = 0.0
     for k in eachindex(fp.positions)
-        fp.positions[k] = fp.positions[k] * (1+ret[k])
+        wr = fp.positions[k] * ret[k]
+        portreturn += wr
+        fp.positions[k] += wr
     end
     normalize!(fp)
     return portreturn
 end
 
+
+
+
+
+
+
+
+"""
+    checkupdate!(fp::FinancialPortfolio,ret)
+
+Updates the weights of the portfolio in place. Returns the period portfolio return.
+
+If `ret` does not contain an entry for one of the existing portfolio positions, this function assumes the position was closed.
+
+`positions` must be an object like `Dict` or `Dictionaries.AbstractDictionary`.
+
+_**Example**_
+```
+w = Dict(["stockA"=>0.8,"stockB"=>0.2])
+r = Dict(["stockA"=>0.1])
+FP = FinancialPortfolio(w)
+checkupdate!(FP,r)
+FP
+```
+"""
+function checkupdate!(fp::FinancialPortfolio{T},ret) where {T}
+    @assert !(T<:AbstractArray) "`checkupdate!` only allowed for named positions (not vectors)"
+    for k in eachindex(fp.positions)
+        if !haskey(ret,k)
+            delete!(fp.positions,k)
+        end
+    end
+    normalize!(fp)
+    portreturn = update!(fp,ret)
+    return portreturn
+end
 
 ##################### UNEXPORTED AND/OR EXTENDED BASE METHODS
 """
@@ -150,7 +187,7 @@ Base.iterate(fp::FinancialPortfolio) = iterate(fp.positions)
 
 Base.length(fp::FinancialPortfolio) = length(fp.positions)
 
-Base.copy(fp::FinancialPortfolio) = FinancialPortfolio(copy(fp.positions))
+Base.copy(fp::FinancialPortfolio) = FinancialPortfolio(deepcopy(fp.positions))
 
 function Base.similar(fp::FinancialPortfolio)
     ew = 1 / length(fp.positions)
